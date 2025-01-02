@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MRT Buddy - NFC Integration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+  <!-- Header Section -->
+  <header class="bg-green-600 text-white p-4 text-center">
+    <h1 class="text-2xl font-bold">MRT Buddy</h1>
+    <p>Your NFC-based MRT Companion</p>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto p-4">
+    <div class="bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">NFC Card Reader</h2>
+      <p class="text-gray-600 mb-4">Activate NFC on your device and tap your MRT card to check your balance and transit history.</p>
+      
+      <!-- Action Button -->
+      <button id="readNFC" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
+        Start NFC Scan
+      </button>
+      
+      <!-- NFC Data Output -->
+      <div id="output" class="mt-6 hidden">
+        <h3 class="text-lg font-bold text-gray-800">Card Details</h3>
+        <p id="balance" class="text-gray-700 mt-2">Balance: <span class="font-semibold">$0.00</span></p>
+        <p id="history-title" class="text-gray-800 font-semibold mt-4">Transit History:</p>
+        <ul id="history" class="list-disc list-inside text-gray-600"></ul>
+      </div>
+
+      <!-- Error Message -->
+      <div id="error" class="mt-4 text-red-600 hidden"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white p-4 text-center">
+    <p>&copy; 2025 MRT Buddy. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    document.getElementById("readNFC").addEventListener("click", async () => {
+      const output = document.getElementById("output");
+      const error = document.getElementById("error");
+      const balanceElement = document.getElementById("balance");
+      const historyElement = document.getElementById("history");
+
+      try {
+        // Check for NFC support
+        if (!('NDEFReader' in window)) {
+          throw new Error("NFC is not supported on this device or browser.");
+        }
+
+        // Create NFC reader
+        const ndef = new NDEFReader();
+        await ndef.scan();
+        console.log("NFC reader initialized.");
+
+        ndef.onreading = (event) => {
+          const record = event.message.records[0];
+          const decoder = new TextDecoder();
+          const data = JSON.parse(decoder.decode(record.data));
+
+          // Display balance
+          balanceElement.innerHTML = `Balance: <span class="font-semibold">$${data.balance}</span>`;
+          
+          // Display history
+          historyElement.innerHTML = "";
+          data.history.forEach((item) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `Station: ${item.station}, Amount: $${item.amount}, Date: ${item.date}`;
+            historyElement.appendChild(listItem);
+          });
+
+          output.classList.remove("hidden");
+          error.classList.add("hidden");
+        };
+
+        ndef.onreadingerror = () => {
+          error.textContent = "Error reading NFC card. Please try again.";
+          error.classList.remove("hidden");
+          output.classList.add("hidden");
+        };
+      } catch (err) {
+        error.textContent = err.message;
+        error.classList.remove("hidden");
+        output.classList.add("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

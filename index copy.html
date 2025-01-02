@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MRT Pass Checker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@tabler/icons@1.84.0/dist/tabler-icons.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold text-center mb-8">MRT Pass Checker</h1>
+
+    <!-- NFC or Card Number Input -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-4">Check Your Card</h2>
+      <p class="text-gray-600 mb-4">Use NFC or enter your card number to check balance and history.</p>
+
+      <div class="flex items-center space-x-4">
+        <button id="nfcButton" class="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600">
+          <i class="ti ti-wifi"></i> Use NFC
+        </button>
+
+        <input 
+          type="text" 
+          id="cardNumber" 
+          placeholder="Enter Card Number" 
+          class="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:ring focus:ring-green-300"
+        >
+        <button id="checkButton" class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600">
+          Check
+        </button>
+      </div>
+    </div>
+
+    <!-- Display Results -->
+    <div id="results" class="mt-8 hidden">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4">Card Details</h2>
+
+        <div class="mb-4">
+          <p class="font-medium text-gray-700">Balance:</p>
+          <p id="balance" class="text-xl font-bold text-green-500">$0.00</p>
+        </div>
+
+        <div class="mb-4">
+          <p class="font-medium text-gray-700">Transit History:</p>
+          <ul id="transitHistory" class="list-disc list-inside text-gray-600">
+            <!-- Transit history items will be dynamically added here -->
+          </ul>
+        </div>
+
+        <div>
+          <p class="font-medium text-gray-700">Recharge History:</p>
+          <ul id="rechargeHistory" class="list-disc list-inside text-gray-600">
+            <!-- Recharge history items will be dynamically added here -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("nfcButton").addEventListener("click", () => {
+      // Mocking NFC interaction
+      alert("NFC activated! Mocking data retrieval...");
+      displayResults("1234567890");
+    });
+
+    document.getElementById("checkButton").addEventListener("click", () => {
+      const cardNumber = document.getElementById("cardNumber").value;
+      if (!cardNumber) {
+        alert("Please enter a card number.");
+        return;
+      }
+      displayResults(cardNumber);
+    });
+
+    function displayResults(cardNumber) {
+      // Mock data
+      const mockData = {
+        balance: "$25.50",
+        transitHistory: [
+          "2025-01-01: Diabari to Agargaon",
+          "2024-12-31: Agargaon to Motijheel",
+          "2024-12-30: Diabari to Motijheel"
+        ],
+        rechargeHistory: [
+          "2024-12-28: $20",
+          "2024-12-15: $30"
+        ]
+      };
+
+      document.getElementById("balance").textContent = mockData.balance;
+      
+      const transitHistoryEl = document.getElementById("transitHistory");
+      transitHistoryEl.innerHTML = mockData.transitHistory
+        .map(history => `<li>${history}</li>`)
+        .join("");
+
+      const rechargeHistoryEl = document.getElementById("rechargeHistory");
+      rechargeHistoryEl.innerHTML = mockData.rechargeHistory
+        .map(history => `<li>${history}</li>`)
+        .join("");
+
+      document.getElementById("results").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
